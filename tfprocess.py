@@ -59,7 +59,7 @@ class TFProcess:
     def __init__(self):
         # Network structure
         self.RESIDUAL_FILTERS = 128
-        self.RESIDUAL_BLOCKS = 6
+        self.RESIDUAL_BLOCKS = 10
 
         # For exporting
         self.weights = []
@@ -73,9 +73,11 @@ class TFProcess:
         # TF variables
         print "init call"
 
-    def init_net(self, next_batch):
-        self.x = next_batch[0]  # tf.placeholder(tf.float32, [None, 18, 19 * 19])
+    def init_net(self, weight, rs_blocks,rs_filters):
+        self.x = tf.placeholder(tf.float32, [None, 18, 19 * 19])
         self.batch_norm_count = 0
+        self.RESIDUAL_BLOCKS = rs_blocks
+        self.RESIDUAL_FILTERS = rs_filters
         self.y_conv, self.z_conv = self.construct_net(self.x)
 
 
@@ -94,6 +96,7 @@ class TFProcess:
         self.saver = tf.train.Saver()
 
         self.session.run(self.init)
+        self.replace_weights(weight)
 
     def replace_weights(self, new_weights):
         for e, weights in enumerate(self.weights):

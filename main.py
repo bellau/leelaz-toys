@@ -10,33 +10,8 @@ net_hash = weights.model()
 print net_hash
 m = ntm.transform(net_hash)
 
-x = [
-    tf.placeholder(tf.float32, [None, 18, 19 * 19])
-    #,    
-    #tf.placeholder(tf.float32, [None, 362]),
-    #tf.placeholder(tf.float32, [None, 1])
-    ]
-
-
-def load_graph(frozen_graph_filename):                                                                                                                     
-    with tf.gfile.GFile(frozen_graph_filename, "rb") as f:                                                                                                 
-        graph_def = tf.GraphDef()
-        graph_def.ParseFromString(f.read())                                                                                                                
-
-    with tf.Graph().as_default() as graph:                                                                                                                 
-        tf.import_graph_def(graph_def, name = "")                                                                                                                     
-
-    return graph
-
 tfprocess = tfp.TFProcess()
-tfprocess.init_net(x)
-if tfprocess.RESIDUAL_BLOCKS != m[1]:
-    raise ValueError("Number of blocks in tensorflow model doesn't match "\
-            "number of blocks in input network")
-if tfprocess.RESIDUAL_FILTERS != m[2]:
-    raise ValueError("Number of filters in tensorflow model doesn't match "\
-            "number of filters in input network")
-tfprocess.replace_weights(m[0])
+tfprocess.init_net(m[0],m[1],m[2])
 planes = np.zeros((1, 18, 19, 19))
 #planes[0][15][3][3] =  1
 planes[0][17] = np.ones((19,19))
